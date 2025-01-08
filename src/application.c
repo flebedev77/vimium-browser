@@ -99,6 +99,11 @@ int application_initShaders()
   glDeleteShader(fragmentShader);
   return APPLICATION_SUCCESS;
 }
+void onclick(int h)
+{
+  exit(0);
+  printf("CLICKED!!!!!");
+}
 
 int application_initApp(Application* app_ptr, int width, int height)
 {
@@ -144,9 +149,12 @@ int application_initApp(Application* app_ptr, int width, int height)
     return APPLICATION_ERROR;
   }
 
+
   Widget w;
   app_ptr->widgets[0] = w;
   widget_init(&app_ptr->widgets[0], 0, 0, 100, 100, width, height);
+  widget_setClickcallback(&app_ptr->widgets[0], onclick);
+  widget_init(&app_ptr->widgets[1], 500, 500, 50, 50, width, height);
 
   return APPLICATION_SUCCESS;
 }
@@ -190,7 +198,7 @@ void application_loopApp(Application* app_ptr)
 
   for (unsigned int i = 0; i < WIDGET_AMOUNT; i++)
   {
-    widget_render(&app_ptr->widgets[i]);
+    widget_render(&app_ptr->widgets[i], app.window);
   }
 
   glfwSwapBuffers(app.window);

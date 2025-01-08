@@ -1,6 +1,7 @@
 #include "widget.h"
 #include <GL/gl.h>
 #include <GL/glext.h>
+#include <GLFW/glfw3.h>
 
 void widget_init(
   Widget* widget,
@@ -57,11 +58,37 @@ void widget_init(
 
 }
 
-void widget_render(Widget* widget)
+void widget_render(Widget* widget, GLFWwindow* window)
 {
   assert(widget);
+  
+  double mouseX, mouseY;
+  glfwGetCursorPos(window, &mouseX, &mouseY);
+  float mx = (float)mouseX, my = (float)mouseY;
+
+
+  Widget w = *widget;
+  if (
+      glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS &&
+    mx < w.x + w.w &&
+    mx + 1 > w.x &&
+    my < w.y + w.h &&
+    my + 1 > w.y
+  )
+  {
+    /*if (widget->clickCallback)*/
+    /*{*/
+      widget->clickCallback(1);
+    /*}*/
+  }
 
   glBindVertexArray(widget->meshVAO);
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);
+}
+
+void widget_setClickcallback(Widget* widget, WidgetCallback callback)
+{
+  assert(widget);
+  widget->clickCallback = callback;
 }

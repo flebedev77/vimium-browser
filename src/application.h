@@ -15,7 +15,7 @@
 
 #define LOG_MAX_LENGTH 512
 
-#define WIDGET_AMOUNT 1
+#define WIDGET_AMOUNT 2
 
 typedef struct
 {
