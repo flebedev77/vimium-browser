@@ -129,7 +129,7 @@ int application_initApp(Application* app_ptr, int width, int height)
     return APPLICATION_ERROR;
   }
 
-  Widget w = {-1, -1};
+  Widget w;
   app_ptr->widgets[0] = w;
   widget_init(&app_ptr->widgets[0], 0, 0, 100, 100, width, height);
 

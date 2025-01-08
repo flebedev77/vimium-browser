@@ -18,15 +18,12 @@ void widget_init(
   float brX, brY;
   float blX, blY;
   float tlX, tlY;
-  screenPosToNormalisedPos(x + w, y, windowWidth, windowHeight, &trX, &trY);
-  screenPosToNormalisedPos(x + w, y - h, windowWidth, windowHeight, &brX, &brY);
-  screenPosToNormalisedPos(x, y - h, windowWidth, windowHeight, &blX, &blY);
-  screenPosToNormalisedPos(x, y, windowWidth, windowHeight, &tlX, &tlY);
+  windowPosToNormalisedPos(x + w, y, windowWidth, windowHeight, &trX, &trY);
+  windowPosToNormalisedPos(x + w, y + h, windowWidth, windowHeight, &brX, &brY);
+  windowPosToNormalisedPos(x, y + h, windowWidth, windowHeight, &blX, &blY);
+  windowPosToNormalisedPos(x, y, windowWidth, windowHeight, &tlX, &tlY);
+
   float verts[] = {
-    /*0.5f,  0.5f, 0.0f,*/
-    /*0.5f, -0.5f, 0.0f,*/
-    /*-0.5f, -0.5f, 0.0f,*/
-    /*-0.5f,  0.5f, 0.0f*/
     trX, trY, 0.0f,
     brX, brY, 0.0f,
     blX, blY, 0.0f,
