@@ -14,6 +14,11 @@ void widget_init(
 {
   assert(widget);
 
+  widget->x = x;
+  widget->y = y;
+  widget->w = w;
+  widget->h = h;
+
   float trX, trY;
   float brX, brY;
   float blX, blY;

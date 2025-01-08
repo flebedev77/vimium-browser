@@ -21,6 +21,22 @@ void application_on_resize_callback(GLFWwindow* window, int width, int height)
   app->windowWidth = width;
   app->windowHeight = height;
   glViewport(0, 0, width, height);
+
+  for (unsigned int i = 0; i < WIDGET_AMOUNT; i++) 
+  {
+    Widget currentWidget = app->widgets[i];
+
+    widget_init(
+      &app->widgets[i],
+      currentWidget.x,
+      currentWidget.y,
+      currentWidget.w,
+      currentWidget.h,
+      width,
+      height
+    );
+
+  }
 }
 
 int application_initShaders()
@@ -65,7 +81,6 @@ int application_initShaders()
     printf("Error compiling fragment shader %s", infoLog);
     return APPLICATION_ERROR;
   }
-
 
   unsigned int shaderProgram = glCreateProgram();
   glAttachShader(shaderProgram, vertexShader);
