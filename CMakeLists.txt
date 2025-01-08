@@ -10,7 +10,13 @@ if(NOT OPENGL_FOUND)
 endif(NOT OPENGL_FOUND)
 set(GL_LIBRARY GL GLU X11)
 
-file(GLOB SOURCES "src/*.c")
+# Force static linking for GLFW
+set(GLFW_STATIC ON)  # Make sure GLFW is built statically
+
+# Find GLFW package (if installed or available in the system)
+# find_package(GLFW REQUIRED)
+
+file(GLOB SOURCES "src/*.c" "src/ui/*.c")
 
 include_directories(${CMAKE_SOURCE_DIR}/lib/include/glad)
 

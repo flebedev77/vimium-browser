@@ -1,17 +1,25 @@
 #include "application.h"
+#include "ui/widget.h"
 #include <GL/gl.h>
 #include <GL/glext.h>
+#include <GLFW/glfw3.h>
 
 Application application_createApp()
 {
   Application a;
   a.window = 0;
+  a.windowWidth = 0;
+  a.windowHeight = 0;
   a.isRunning = true;
+  a.isDebug = false;
   return a;
 }
 
 void application_on_resize_callback(GLFWwindow* window, int width, int height)
 {
+  Application* app = (Application*)glfwGetWindowUserPointer(window);
+  app->windowWidth = width;
+  app->windowHeight = height;
   glViewport(0, 0, width, height);
 }
 
@@ -22,7 +30,7 @@ int application_initShaders()
 
   const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
-    "void main()fsd\n"
+    "void main()\n"
     "{\n"
     "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
     "}\0";
@@ -43,8 +51,7 @@ int application_initShaders()
     "out vec4 FragColor;\n"
     "void main()\n"
     "{\n"
-    "     dkljsdfhdkjfshdkfjsdhf\n"
-    "    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+    "    FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
     "}\n";
 
   unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -92,6 +99,8 @@ int application_initApp(Application* app_ptr, int width, int height)
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+  app_ptr->windowWidth = width;
+  app_ptr->windowHeight = height;
   app_ptr->window = glfwCreateWindow(width, height, "Web Browser", NULL, NULL);
   if (!app_ptr->window)
   {
@@ -100,6 +109,7 @@ int application_initApp(Application* app_ptr, int width, int height)
     return APPLICATION_ERROR;
   }
 
+  glfwSetWindowUserPointer(app_ptr->window, app_ptr);
   glfwSetWindowSizeCallback(app_ptr->window, application_on_resize_callback);
 
   glfwMakeContextCurrent(app_ptr->window);
@@ -113,42 +123,35 @@ int application_initApp(Application* app_ptr, int width, int height)
 
   glViewport(0, 0, width, height);
 
-  float verts[] = {
-    -0.5f, -0.5f, 0.0f,
-     0.5f, -0.5f, 0.0f,
-     0.0f,  0.5f, 0.0f
-  };
-
-  glGenBuffers(1, &app_ptr->testTriangleVBO);
-  glBindBuffer(GL_ARRAY_BUFFER, app_ptr->testTriangleVBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
-
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-  glEnableVertexAttribArray(0);
-
-
-  glGenVertexArrays(1, &app_ptr->testTriangleVAO);
-  glBindVertexArray(app_ptr->testTriangleVAO);
-
-  glBindBuffer(GL_ARRAY_BUFFER, app_ptr->testTriangleVBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(verts), verts, GL_STATIC_DRAW);
-
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-  glEnableVertexAttribArray(0);
-
   //shaders
   if (application_initShaders() == APPLICATION_ERROR)
   {
     return APPLICATION_ERROR;
   }
 
+  Widget w = {-1, -1};
+  app_ptr->widgets[0] = w;
+  widget_init(&app_ptr->widgets[0], 0, 0, 100, 100, width, height);
+
   return APPLICATION_SUCCESS;
 }
 
-void application_handleInput(GLFWwindow* window)
+void application_handleInput(GLFWwindow* window, Application* app)
 {
-  if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+  assert(app);
+  if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+  {
     glfwSetWindowShouldClose(window, true);
+  }
+
+  if (
+    glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS &&
+    glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS
+  )
+  {
+    app->isDebug = !app->isDebug;
+    glPolygonMode(GL_FRONT_AND_BACK, (*app).isDebug ? GL_LINE : GL_FILL); 
+  }
 }
 
 void application_loopApp(Application* app_ptr)
@@ -157,7 +160,7 @@ void application_loopApp(Application* app_ptr)
   Application app = *app_ptr;
 
   app_ptr->isRunning = !glfwWindowShouldClose(app.window);
-  application_handleInput(app.window);
+  application_handleInput(app.window, app_ptr);
 
   glClearColor(1, 1, 1, 1);
   glClear(GL_COLOR_BUFFER_BIT);
@@ -170,9 +173,10 @@ void application_loopApp(Application* app_ptr)
   /*glVertex2f(1, 1);*/
   /*glEnd();*/
 
-  /*glUseProgram();*/
-  /*glBindVertexArray(app_ptr->testTriangleVAO);*/
-  glDrawArrays(GL_TRIANGLES, 0, 3);
+  for (unsigned int i = 0; i < WIDGET_AMOUNT; i++)
+  {
+    widget_render(&app_ptr->widgets[i]);
+  }
 
   glfwSwapBuffers(app.window);
 

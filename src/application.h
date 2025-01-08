@@ -8,18 +8,23 @@
 #include <unistd.h>
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
+#include "ui/widget.h"
 
 #define APPLICATION_ERROR -1
 #define APPLICATION_SUCCESS 1
 
 #define LOG_MAX_LENGTH 512
 
+#define WIDGET_AMOUNT 1
+
 typedef struct
 {
   GLFWwindow* window;
+  unsigned int windowWidth;
+  unsigned int windowHeight;
   bool isRunning;
-  unsigned int testTriangleVBO;
-  unsigned int testTriangleVAO;
+  bool isDebug;
+  Widget widgets[WIDGET_AMOUNT];
 } Application;
 
 Application application_createApp();
