@@ -82,7 +82,7 @@ int application_initApp(Application* app_ptr, int width, int height)
 
   //shaders
   unsigned int shader;
-  if (shader_createColored(&shader, 0.1f, 0.1f, 0.1f) == APPLICATION_ERROR)
+  if (shader_createColored(&shader, 0.1f, 1.0f, 0.1f) == APPLICATION_ERROR)
   {
     return APPLICATION_ERROR;
   }

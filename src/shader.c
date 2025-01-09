@@ -29,12 +29,23 @@ int shader_createColored(
     return APPLICATION_ERROR;
   }
 
-  const char *fragmentShaderSource = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "    FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
-    "}\n";
+  /*const char *fragmentShaderSource = "#version 330 core\n"*/
+  /*  "out vec4 FragColor;\n"*/
+  /*  "void main()\n"*/
+  /*  "{\n"*/
+  /*  "    FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"*/
+  /*  "}\n";*/
+
+  char formattedFragmentShader[512];
+
+  snprintf(formattedFragmentShader, sizeof(formattedFragmentShader),
+           "#version 330 core\n"
+           "out vec4 FragColor;\n"
+           "void main()\n"
+           "{\n"
+           "    FragColor = vec4(%f, %f, %f, 1.0f);\n"
+           "}\n", r, g, b);
+  const char *fragmentShaderSource = formattedFragmentShader;
 
   unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
