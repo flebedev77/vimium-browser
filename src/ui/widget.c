@@ -5,29 +5,27 @@
 
 void widget_init(
   Widget* widget,
-  float x,
-  float y,
-  float w,
-  float h,
+  void* parentApplication,
   int windowWidth,
   int windowHeight
 )
 {
   assert(widget);
+  widget->parentApplication = parentApplication;
 
-  widget->x = x;
-  widget->y = y;
-  widget->w = w;
-  widget->h = h;
+  widget->isHovered = false;
+  widget->isDown = false;
+
 
   float trX, trY;
   float brX, brY;
   float blX, blY;
   float tlX, tlY;
-  windowPosToNormalisedPos(x + w, y, windowWidth, windowHeight, &trX, &trY);
-  windowPosToNormalisedPos(x + w, y + h, windowWidth, windowHeight, &brX, &brY);
-  windowPosToNormalisedPos(x, y + h, windowWidth, windowHeight, &blX, &blY);
-  windowPosToNormalisedPos(x, y, windowWidth, windowHeight, &tlX, &tlY);
+  Widget wid = *widget;
+  windowPosToNormalisedPos(wid.x + wid.w, wid.y, windowWidth, windowHeight, &trX, &trY);
+  windowPosToNormalisedPos(wid.x + wid.w, wid.y + wid.h, windowWidth, windowHeight, &brX, &brY);
+  windowPosToNormalisedPos(wid.x, wid.y + wid.h, windowWidth, windowHeight, &blX, &blY);
+  windowPosToNormalisedPos(wid.x, wid.y, windowWidth, windowHeight, &tlX, &tlY);
 
   float verts[] = {
     trX, trY, 0.0f,
@@ -69,19 +67,25 @@ void widget_render(Widget* widget, GLFWwindow* window)
 
   Widget w = *widget;
   if (
-      glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS &&
     mx < w.x + w.w &&
     mx + 1 > w.x &&
     my < w.y + w.h &&
     my + 1 > w.y
   )
   {
-    /*if (widget->clickCallback)*/
-    /*{*/
-      widget->clickCallback(1);
-    /*}*/
+    if (widget->clickCallback)
+    {
+      widget->clickCallback(widget->parentApplication);
+    }
   }
 
+  if (widget->shaderProgram != 0)
+  {
+    glUseProgram(widget->shaderProgram);
+  } else 
+  {
+    printf("Widget dosen't have associated shader program!\n");
+  }
   glBindVertexArray(widget->meshVAO);
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
   glBindVertexArray(0);
@@ -91,4 +95,11 @@ void widget_setClickcallback(Widget* widget, WidgetCallback callback)
 {
   assert(widget);
   widget->clickCallback = callback;
+}
+
+void widget_delete(Widget* widget)
+{
+  glDeleteVertexArrays(1, &widget->meshVAO);
+  glDeleteBuffers(1, &widget->meshVBO);
+  glDeleteBuffers(1, &widget->meshEBO);
 }

@@ -28,10 +28,7 @@ void application_on_resize_callback(GLFWwindow* window, int width, int height)
 
     widget_init(
       &app->widgets[i],
-      currentWidget.x,
-      currentWidget.y,
-      currentWidget.w,
-      currentWidget.h,
+      currentWidget.parentApplication,
       width,
       height
     );
@@ -39,70 +36,10 @@ void application_on_resize_callback(GLFWwindow* window, int width, int height)
   }
 }
 
-int application_initShaders()
+void onclick(void* app_ptr)
 {
-  int  success;
-  char infoLog[LOG_MAX_LENGTH];
-
-  const char *vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
-  unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-
-  glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-  glCompileShader(vertexShader);
-
-  glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
-  if (!success)
-  {
-    glGetShaderInfoLog(vertexShader, LOG_MAX_LENGTH, NULL, infoLog);
-    printf("Error compiling vertex shader %s", infoLog);
-    return APPLICATION_ERROR;
-  }
-
-  const char *fragmentShaderSource = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "    FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
-    "}\n";
-
-  unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-  glCompileShader(fragmentShader);
-
-  glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
-  if (!success)
-  {
-    glGetShaderInfoLog(fragmentShader, LOG_MAX_LENGTH, NULL, infoLog);
-    printf("Error compiling fragment shader %s", infoLog);
-    return APPLICATION_ERROR;
-  }
-
-  unsigned int shaderProgram = glCreateProgram();
-  glAttachShader(shaderProgram, vertexShader);
-  glAttachShader(shaderProgram, fragmentShader);
-  glLinkProgram(shaderProgram);
-
-  glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-  if (!success) {
-    glGetProgramInfoLog(shaderProgram, LOG_MAX_LENGTH, NULL, infoLog);
-    return APPLICATION_ERROR;
-  }
-
-  glUseProgram(shaderProgram);
-
-  glDeleteShader(vertexShader);
-  glDeleteShader(fragmentShader);
-  return APPLICATION_SUCCESS;
-}
-void onclick(int h)
-{
-  exit(0);
-  printf("CLICKED!!!!!");
+  Application* app = (Application*)app_ptr;
+  app->isDebug = true;
 }
 
 int application_initApp(Application* app_ptr, int width, int height)
@@ -144,17 +81,23 @@ int application_initApp(Application* app_ptr, int width, int height)
   glViewport(0, 0, width, height);
 
   //shaders
-  if (application_initShaders() == APPLICATION_ERROR)
+  unsigned int shader;
+  if (shader_createColored(&shader, 0.1f, 0.1f, 0.1f) == APPLICATION_ERROR)
   {
     return APPLICATION_ERROR;
   }
 
 
   Widget w;
+  w.x = 0;
+  w.y = 0;
+  w.w = 150;
+  w.h = 25;
+  w.shaderProgram = shader;
   app_ptr->widgets[0] = w;
-  widget_init(&app_ptr->widgets[0], 0, 0, 100, 100, width, height);
+
+  widget_init(&app_ptr->widgets[0], app_ptr, width, height);
   widget_setClickcallback(&app_ptr->widgets[0], onclick);
-  widget_init(&app_ptr->widgets[1], 500, 500, 50, 50, width, height);
 
   return APPLICATION_SUCCESS;
 }
@@ -173,7 +116,6 @@ void application_handleInput(GLFWwindow* window, Application* app)
   )
   {
     app->isDebug = !app->isDebug;
-    glPolygonMode(GL_FRONT_AND_BACK, (*app).isDebug ? GL_LINE : GL_FILL); 
   }
 }
 
@@ -182,6 +124,7 @@ void application_loopApp(Application* app_ptr)
   assert(app_ptr);
   Application app = *app_ptr;
 
+  glPolygonMode(GL_FRONT_AND_BACK, app.isDebug ? GL_LINE : GL_FILL); 
   app_ptr->isRunning = !glfwWindowShouldClose(app.window);
   application_handleInput(app.window, app_ptr);
 
@@ -209,6 +152,11 @@ void application_loopApp(Application* app_ptr)
 
 void application_quitApp(Application* app_ptr)
 {
+  for(unsigned int i = 0; i < WIDGET_AMOUNT; i++)
+  {
+    widget_delete(&app_ptr->widgets[i]);
+  }
+
   app_ptr->isRunning = false;
   glfwTerminate();
 }

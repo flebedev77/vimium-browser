@@ -9,13 +9,9 @@
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
 #include "ui/widget.h"
+#include "config.h"
+#include "shader.h"
 
-#define APPLICATION_ERROR -1
-#define APPLICATION_SUCCESS 1
-
-#define LOG_MAX_LENGTH 512
-
-#define WIDGET_AMOUNT 2
 
 typedef struct
 {
