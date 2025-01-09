@@ -18,7 +18,7 @@ set(GLFW_STATIC ON)  # Make sure GLFW is built statically
 
 file(GLOB SOURCES "src/*.c" "src/ui/*.c")
 
-include_directories(${CMAKE_SOURCE_DIR}/lib/include/glad)
+include_directories(${CMAKE_SOURCE_DIR}/lib/include/glad ${CMAKE_SOURCE_DIR}/lib/include)
 
 add_executable(vbrowser src/main.c ${SOURCES})
 
