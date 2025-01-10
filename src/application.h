@@ -11,6 +11,7 @@
 #include "ui/widget.h"
 #include "config.h"
 #include "shader.h"
+#include "texture.h"
 
 
 typedef struct
@@ -20,7 +21,9 @@ typedef struct
   unsigned int windowHeight;
   bool isRunning;
   bool isDebug;
+
   Widget widgets[WIDGET_AMOUNT];
+  Texture* loadedTextures;
 } Application;
 
 Application application_createApp();

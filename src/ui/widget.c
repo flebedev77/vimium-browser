@@ -16,6 +16,14 @@ void widget_init(
   widget->isHovered = false;
   widget->isDown = false;
 
+  if (widget->texture != NULL)
+  {
+    widget->hasTexture = true;
+  } else 
+  {
+    widget->hasTexture = false;
+  }
+
 
   float trX, trY;
   float brX, brY;
@@ -53,7 +61,9 @@ void widget_init(
 
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(0);
+  
 
+  /*texture_init(&tex, "../assets/logo.jpeg");*/
 }
 
 void widget_render(Widget* widget, GLFWwindow* window)
@@ -84,7 +94,7 @@ void widget_render(Widget* widget, GLFWwindow* window)
     glUseProgram(widget->shaderProgram);
   } else 
   {
-    printf("Widget dosen't have associated shader program!\n");
+    printf("Widget dosen't have associated shader program! Is the WIDGET_AMOUNT equal to the actual amount of widgets?\n");
   }
   glBindVertexArray(widget->meshVAO);
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

@@ -20,3 +20,5 @@ int shader_createColored(
   float g,
   float b
 );
+
+void shader_delete(unsigned int shaderProgram);

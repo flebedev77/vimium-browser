@@ -5,4 +5,4 @@
 #define LOG_MAX_LENGTH 512
 
 #define WIDGET_AMOUNT 1
-
+#define INITIAL_TEXTURE_AMOUNT 1

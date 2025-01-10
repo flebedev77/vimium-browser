@@ -40,6 +40,7 @@ void onclick(void* app_ptr)
 {
   Application* app = (Application*)app_ptr;
   app->isDebug = true;
+  glPolygonMode(GL_FRONT_AND_BACK, app->isDebug ? GL_LINE : GL_FILL); 
 }
 
 int application_initApp(Application* app_ptr, int width, int height)
@@ -80,24 +81,34 @@ int application_initApp(Application* app_ptr, int width, int height)
 
   glViewport(0, 0, width, height);
 
-  //shaders
+
   unsigned int shader;
   if (shader_createColored(&shader, 0.1f, 1.0f, 0.1f) == APPLICATION_ERROR)
   {
     return APPLICATION_ERROR;
   }
 
+  app_ptr->loadedTextures = (Texture*)malloc(INITIAL_TEXTURE_AMOUNT * sizeof(Texture));
+
+  Texture tex = {0};
+  if (texture_init(&tex, "../assets/logo.jpeg") == APPLICATION_ERROR)
+  {
+    return APPLICATION_ERROR;
+  }
 
   Widget w;
   w.x = 0;
   w.y = 0;
-  w.w = 150;
+  w.w = 120;
   w.h = 25;
   w.shaderProgram = shader;
+  //FUCK, gotta allocate ts on the heap
+  w.texture = &tex;
   app_ptr->widgets[0] = w;
 
   widget_init(&app_ptr->widgets[0], app_ptr, width, height);
   widget_setClickcallback(&app_ptr->widgets[0], onclick);
+
 
   return APPLICATION_SUCCESS;
 }
@@ -124,8 +135,10 @@ void application_loopApp(Application* app_ptr)
   assert(app_ptr);
   Application app = *app_ptr;
 
-  glPolygonMode(GL_FRONT_AND_BACK, app.isDebug ? GL_LINE : GL_FILL); 
-  app_ptr->isRunning = !glfwWindowShouldClose(app.window);
+  if (glfwWindowShouldClose(app.window))
+  {
+    app_ptr->isRunning = false;
+  }
   application_handleInput(app.window, app_ptr);
 
   glClearColor(1, 1, 1, 1);
@@ -156,6 +169,8 @@ void application_quitApp(Application* app_ptr)
   {
     widget_delete(&app_ptr->widgets[i]);
   }
+
+  free(app_ptr->loadedTextures);
 
   app_ptr->isRunning = false;
   glfwTerminate();

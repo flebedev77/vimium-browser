@@ -9,6 +9,7 @@
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
 #include "../util.h"
+#include "../texture.h"
 
 typedef void (*WidgetCallback)(void*);
 
@@ -18,6 +19,9 @@ typedef struct
   unsigned int meshVBO; // Vertex positions
   unsigned int meshEBO; // Indicies
   unsigned int shaderProgram;
+
+  bool hasTexture;
+  Texture* texture;
   
   WidgetCallback clickCallback;
 

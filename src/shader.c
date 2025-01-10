@@ -76,3 +76,8 @@ int shader_createColored(
   glDeleteShader(fragmentShader);
   return APPLICATION_SUCCESS;
 }
+
+void shader_delete(unsigned int shaderProgram)
+{
+  glDeleteShader(shaderProgram);
+}
