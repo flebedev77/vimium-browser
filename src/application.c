@@ -83,15 +83,16 @@ int application_initApp(Application* app_ptr, int width, int height)
 
 
   unsigned int shader;
-  if (shader_createColored(&shader, 0.1f, 1.0f, 0.1f) == APPLICATION_ERROR)
+  if (shader_createTextured(&shader) == APPLICATION_ERROR)
   {
     return APPLICATION_ERROR;
   }
 
   app_ptr->loadedTextures = (Texture*)malloc(INITIAL_TEXTURE_AMOUNT * sizeof(Texture));
 
-  Texture tex = {0};
-  if (texture_init(&tex, "../assets/logo.jpeg") == APPLICATION_ERROR)
+  Texture tex;
+
+  if (texture_init(&tex, "../assets/vim.png") == APPLICATION_ERROR)
   {
     return APPLICATION_ERROR;
   }
@@ -99,10 +100,11 @@ int application_initApp(Application* app_ptr, int width, int height)
   Widget w;
   w.x = 0;
   w.y = 0;
-  w.w = 120;
-  w.h = 25;
+  /*w.w = (float)tex.width;*/
+  /*w.h = (float)tex.height;*/
+  w.w = app_ptr->windowWidth;
+  w.h = app_ptr->windowHeight;
   w.shaderProgram = shader;
-  //FUCK, gotta allocate ts on the heap
   w.texture = &tex;
   app_ptr->widgets[0] = w;
 

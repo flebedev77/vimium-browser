@@ -1,21 +1,15 @@
 #include "shader.h"
 
-int shader_createColored(
+int shader_createFromShader(
   unsigned int* shaderProgram,
-  float r,
-  float g,
-  float b
+  const char* vertexShaderSource,
+  const char* fragmentShaderSource
 )
 {
   int  success;
   char infoLog[LOG_MAX_LENGTH];
 
-  const char *vertexShaderSource = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
+  
   unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
   glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
@@ -29,23 +23,6 @@ int shader_createColored(
     return APPLICATION_ERROR;
   }
 
-  /*const char *fragmentShaderSource = "#version 330 core\n"*/
-  /*  "out vec4 FragColor;\n"*/
-  /*  "void main()\n"*/
-  /*  "{\n"*/
-  /*  "    FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"*/
-  /*  "}\n";*/
-
-  char formattedFragmentShader[512];
-
-  snprintf(formattedFragmentShader, sizeof(formattedFragmentShader),
-           "#version 330 core\n"
-           "out vec4 FragColor;\n"
-           "void main()\n"
-           "{\n"
-           "    FragColor = vec4(%f, %f, %f, 1.0f);\n"
-           "}\n", r, g, b);
-  const char *fragmentShaderSource = formattedFragmentShader;
 
   unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
   glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
@@ -75,6 +52,69 @@ int shader_createColored(
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
   return APPLICATION_SUCCESS;
+}
+
+int shader_createTextured(unsigned int* shaderProgram)
+{
+  const char *vertexShaderSource = "#version 330 core\n"
+    "layout (location = 0) in vec3 aPos;\n"
+    "layout (location = 1) in vec2 aTexCoord;\n"
+    "out vec2 TexCoord;\n"
+    "void main()\n"
+    "{\n"
+    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "   TexCoord = aTexCoord;\n"
+    "}\0";
+
+
+  const char *fragmentShaderSource = 
+           "#version 330 core\n"
+           "out vec4 FragColor;\n"
+           "in vec2 TexCoord;\n"
+           "uniform sampler2D textureSampler;\n"
+           "void main()\n"
+           "{\n"
+           "    FragColor = texture(textureSampler, TexCoord);\n"
+           "}\n";
+
+  return shader_createFromShader(
+    shaderProgram,
+    vertexShaderSource,
+    fragmentShaderSource
+  );
+}
+
+int shader_createColored(
+  unsigned int* shaderProgram,
+  float r,
+  float g,
+  float b
+)
+{
+  const char *vertexShaderSource = "#version 330 core\n"
+    "layout (location = 0) in vec3 aPos;\n"
+    "void main()\n"
+    "{\n"
+    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "}\0";
+
+
+  char formattedFragmentShader[512];
+
+  snprintf(formattedFragmentShader, sizeof(formattedFragmentShader),
+           "#version 330 core\n"
+           "out vec4 FragColor;\n"
+           "void main()\n"
+           "{\n"
+           "    FragColor = vec4(%f, %f, %f, 1.0f);\n"
+           "}\n", r, g, b);
+  const char *fragmentShaderSource = formattedFragmentShader;
+
+  return shader_createFromShader(
+    shaderProgram,
+    vertexShaderSource,
+    fragmentShaderSource
+  );
 }
 
 void shader_delete(unsigned int shaderProgram)

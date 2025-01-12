@@ -36,10 +36,11 @@ void widget_init(
   windowPosToNormalisedPos(wid.x, wid.y, windowWidth, windowHeight, &tlX, &tlY);
 
   float verts[] = {
-    trX, trY, 0.0f,
-    brX, brY, 0.0f,
-    blX, blY, 0.0f,
-    tlX, tlY, 0.0f
+     // positions     // texture coords
+    trX, trY, 0.0f,       1.0f, 1.0f,   // top right
+    brX, brY, 0.0f,       1.0f, 0.0f,   // bottom right
+    blX, blY, 0.0f,       0.0f, 0.0f,   // bottom left
+    tlX, tlY, 0.0f,       0.0f, 1.0f    // top left
   };
 
   unsigned int indices[] = {
@@ -59,11 +60,12 @@ void widget_init(
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, widget->meshEBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
   glEnableVertexAttribArray(0);
-  
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 
-  /*texture_init(&tex, "../assets/logo.jpeg");*/
+  glEnableVertexAttribArray(1);
+  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+
 }
 
 void widget_render(Widget* widget, GLFWwindow* window)
@@ -96,9 +98,15 @@ void widget_render(Widget* widget, GLFWwindow* window)
   {
     printf("Widget dosen't have associated shader program! Is the WIDGET_AMOUNT equal to the actual amount of widgets?\n");
   }
+  if (widget->texture != 0)
+  {
+    glBindTexture(GL_TEXTURE_2D, widget->texture->textureHandle);
+  } else if (widget->hasTexture == true)
+  {
+    printf("Widget dosent have any texture, event though its supposed to.");
+  }
   glBindVertexArray(widget->meshVAO);
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
-  glBindVertexArray(0);
 }
 
 void widget_setClickcallback(Widget* widget, WidgetCallback callback)

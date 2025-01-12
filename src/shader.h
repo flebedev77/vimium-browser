@@ -21,4 +21,6 @@ int shader_createColored(
   float b
 );
 
+int shader_createTextured(unsigned int* shaderProgram);
+
 void shader_delete(unsigned int shaderProgram);

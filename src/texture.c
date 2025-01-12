@@ -16,10 +16,23 @@ int texture_init(Texture* tex, const char* filePath)
     0
   );
 
+  printf("%d %d", tex->width, tex->height);
+
+  if (!tex->textureData)
+  {
+    return APPLICATION_ERROR;
+  }
+
+
   glGenTextures(1, &tex->textureHandle);
+  glBindTexture(GL_TEXTURE_2D, tex->textureHandle);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-
-  stbi_image_free(tex->textureData);
+  glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, tex->width, tex->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, tex->textureData);
+  glGenerateMipmap(GL_TEXTURE_2D);
 
   return APPLICATION_SUCCESS;
 }
