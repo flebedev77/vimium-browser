@@ -6,3 +6,5 @@
 
 #define WIDGET_AMOUNT 1
 #define INITIAL_TEXTURE_AMOUNT 1
+
+#define DEBUG 1

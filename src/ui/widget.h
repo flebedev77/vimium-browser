@@ -24,6 +24,7 @@ typedef struct
   Texture* texture;
   
   WidgetCallback clickCallback;
+  WidgetCallback hoverCallback;
 
   float x, y, w, h;
 
@@ -34,6 +35,5 @@ typedef struct
 } Widget;
 
 void widget_init(Widget* widget, void* parentApplication, int windowWidth, int windowHeight);
-void widget_setClickcallback(Widget* widget, WidgetCallback callback);
 void widget_render(Widget* widget, GLFWwindow* window);
 void widget_delete(Widget* widget);

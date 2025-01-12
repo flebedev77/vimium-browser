@@ -16,7 +16,10 @@ int texture_init(Texture* tex, const char* filePath)
     0
   );
 
-  printf("%d %d", tex->width, tex->height);
+  if (DEBUG)
+  {
+    printf("Loaded image %s %dx%dpx\n", filePath, tex->width, tex->height);
+  }
 
   if (!tex->textureData)
   {

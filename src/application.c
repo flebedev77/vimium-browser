@@ -90,9 +90,7 @@ int application_initApp(Application* app_ptr, int width, int height)
 
   app_ptr->loadedTextures = (Texture*)malloc(INITIAL_TEXTURE_AMOUNT * sizeof(Texture));
 
-  Texture tex;
-
-  if (texture_init(&tex, "../assets/vim.png") == APPLICATION_ERROR)
+  if (texture_init(&app_ptr->loadedTextures[0], "../assets/vim.png") == APPLICATION_ERROR)
   {
     return APPLICATION_ERROR;
   }
@@ -103,11 +101,11 @@ int application_initApp(Application* app_ptr, int width, int height)
   w.w = 300.f;
   w.h = 300.f;
   w.shaderProgram = shader;
-  w.texture = &tex;
+  w.texture = &app_ptr->loadedTextures[0];
+  w.clickCallback = onclick;
   app_ptr->widgets[0] = w;
 
   widget_init(&app_ptr->widgets[0], app_ptr, width, height);
-  widget_setClickcallback(&app_ptr->widgets[0], onclick);
 
 
   return APPLICATION_SUCCESS;
