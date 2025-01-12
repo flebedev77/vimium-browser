@@ -37,10 +37,10 @@ void widget_init(
 
   float verts[] = {
      // positions     // texture coords
-    trX, trY, 0.0f,       1.0f, 1.0f,   // top right
-    brX, brY, 0.0f,       1.0f, 0.0f,   // bottom right
-    blX, blY, 0.0f,       0.0f, 0.0f,   // bottom left
-    tlX, tlY, 0.0f,       0.0f, 1.0f    // top left
+    trX, trY, 0.0f,       1.0f, 0.0f,   // bottom right
+    brX, brY, 0.0f,       1.0f, 1.0f,   // top right
+    blX, blY, 0.0f,       0.0f, 1.0f,   // top left
+    tlX, tlY, 0.0f,       0.0f, 0.0f    // bottom left
   };
 
   unsigned int indices[] = {

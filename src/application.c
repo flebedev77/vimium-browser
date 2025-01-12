@@ -100,10 +100,8 @@ int application_initApp(Application* app_ptr, int width, int height)
   Widget w;
   w.x = 0;
   w.y = 0;
-  /*w.w = (float)tex.width;*/
-  /*w.h = (float)tex.height;*/
-  w.w = app_ptr->windowWidth;
-  w.h = app_ptr->windowHeight;
+  w.w = 300.f;
+  w.h = 300.f;
   w.shaderProgram = shader;
   w.texture = &tex;
   app_ptr->widgets[0] = w;
