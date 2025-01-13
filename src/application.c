@@ -98,10 +98,25 @@ int application_initApp(Application* app_ptr, int width, int height)
   }
 
   
-  FT_Set_Pixel_Sizes(*face, 0, 48);  
+  /*FT_Set_Pixel_Sizes(*face, 0, 48);  */
+  /**/
+  /*FT_Load_Char(*face, 'A', FT_LOAD_RENDER);*/
+  /*printf("Width %d   Height %d", (*face)->glyph->bitmap.width, (*face)->glyph->bitmap.rows);*/
 
-  FT_Load_Char(*face, 'A', FT_LOAD_RENDER);
-  printf("Width %d   Height %d", (*face)->glyph->bitmap.width, (*face)->glyph->bitmap.rows);
+  if (font_createTextWidget(
+    &app_ptr->fontManager,
+    app_ptr,
+    app_ptr->windowWidth,
+    app_ptr->windowHeight,
+    face,
+    48,
+    100,
+    100,
+    "Hello world!"
+  ) == APPLICATION_ERROR)
+  {
+    return APPLICATION_ERROR;
+  }
 
   unsigned int shader;
   if (shader_createTextured(&shader) == APPLICATION_ERROR)
@@ -123,7 +138,7 @@ int application_initApp(Application* app_ptr, int width, int height)
   w.h = 300.f;
   w.shaderProgram = shader;
   w.texture = &app_ptr->loadedTextures[0];
-  w.clickCallback = onclick;
+  w.hoverCallback = onclick;
   app_ptr->widgets[0] = w;
 
   widget_init(&app_ptr->widgets[0], app_ptr, width, height);
@@ -175,6 +190,11 @@ void application_loopApp(Application* app_ptr)
   {
     widget_render(&app_ptr->widgets[i], app.window);
   }
+
+  font_renderTextWidgets(
+    &app_ptr->fontManager,
+    app_ptr->window
+  );
 
   glfwSwapBuffers(app.window);
 

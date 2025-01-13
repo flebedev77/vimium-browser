@@ -85,7 +85,11 @@ void widget_render(Widget* widget, GLFWwindow* window)
     my + 1 > w.y
   )
   {
-    if (widget->clickCallback)
+    if (widget->hoverCallback)
+    {
+      widget->hoverCallback(widget->parentApplication);
+    }
+    if (0==1 && widget->clickCallback)
     {
       widget->clickCallback(widget->parentApplication);
     }

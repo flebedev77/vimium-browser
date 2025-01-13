@@ -59,6 +59,9 @@ int font_loadFile(
 
 int font_createTextWidget(
     FontManager* fm,
+    void* parentApplication,
+    unsigned int windowWidth,
+    unsigned int windowHeight,
     FT_Face* face,
     unsigned int size,
     float x,
@@ -73,18 +76,63 @@ int font_createTextWidget(
 
   if (textLen == 0)
   {
+    if (DEBUG)
+    {
+      printf("Text was empty\n");
+    }
     return APPLICATION_ERROR;
   }
 
   Text textWidget;
+  textWidget.length = textLen;
   textWidget.characters = (Character*)malloc(
     textLen * sizeof(Character)
   );
 
-  for (size_t i = 0; i < textLen; i++)
+  unsigned int shader;
+  if (shader_createColored(&shader, 0.1f, 0.1f, 1.f) == APPLICATION_ERROR)
   {
-    textWidget.characters[i].textChar = text[i];
+    if (DEBUG)
+    {
+      printf("Failed to init shader\n");
+    }
+    return APPLICATION_ERROR;
   }
 
+  for (size_t i = 0; i < textLen; i++)
+  {
+    Character* character = &textWidget.characters[i];
+    (*character).textChar = text[i];
+    (*character).widget.x = x + i * 20;
+    (*character).widget.y = y;
+    (*character).widget.w = 15;
+    (*character).widget.h = 25;
+    (*character).widget.shaderProgram = shader;
+    widget_init(&(*character).widget, parentApplication, windowWidth, windowHeight);
+  }
+
+  fm->textAmount++;
+  fm->texts = (Text*)realloc(
+    fm->texts,
+    fm->textAmount * sizeof(Text)
+  );
+  fm->texts[fm->textAmount-1] = textWidget;
+
   return APPLICATION_SUCCESS;
+}
+
+int font_renderTextWidgets(
+    FontManager* fm,
+    GLFWwindow* window
+)
+{
+    assert(fm);
+    assert(window);
+    for (size_t i = 0; i < fm->textAmount; i++)  
+    {
+      for (size_t j = 0; j < fm->texts[i].length; j++)
+      {
+        widget_render(&fm->texts[i].characters[j].widget, window);
+      }
+    }
 }

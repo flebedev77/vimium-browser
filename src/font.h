@@ -2,6 +2,7 @@
 #include "config.h"
 #include "ui/widget.h"
 #include "texture.h"
+#include "shader.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -18,6 +19,7 @@ typedef struct {
 typedef struct {
   Character* characters; 
   unsigned int length;
+  unsigned int size;
 } Text;
 
 typedef struct {
@@ -40,9 +42,17 @@ int font_loadFile(
 
 int font_createTextWidget(
     FontManager* fm,
+    void* parentApplication,
+    unsigned int windowWidth,
+    unsigned int windowHeight,
     FT_Face* face,
     unsigned int size,
     float x,
     float y,
     char text[]
+);
+
+int font_renderTextWidgets(
+    FontManager* fm,
+    GLFWwindow* window
 );
