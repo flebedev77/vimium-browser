@@ -15,14 +15,15 @@ set(GLFW_STATIC ON)  # Make sure GLFW is built statically
 
 # Find GLFW package (if installed or available in the system)
 # find_package(GLFW REQUIRED)
+find_package(Freetype REQUIRED)
 
 file(GLOB SOURCES "src/*.c" "src/ui/*.c")
 
-include_directories(${CMAKE_SOURCE_DIR}/lib/include/glad ${CMAKE_SOURCE_DIR}/lib/include)
+include_directories(${CMAKE_SOURCE_DIR}/lib/include/glad ${CMAKE_SOURCE_DIR}/lib/include ${FREETYPE_INCLUDE_DIRS})
 
 add_executable(vbrowser src/main.c ${SOURCES})
 
 target_sources(vbrowser PRIVATE lib/src/glad.c)
 
-target_link_libraries(vbrowser glfw ${GL_LIBRARY} m)
+target_link_libraries(vbrowser glfw ${GL_LIBRARY} m ${FREETYPE_LIBRARIES})
 

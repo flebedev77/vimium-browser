@@ -12,4 +12,5 @@ typedef struct {
 } Texture;
 
 int texture_init(Texture* tex, const char* filePath);
+int texture_initFromMemory(Texture* tex, unsigned char* data);
 int texture_delete(Texture* tex);

@@ -12,6 +12,7 @@
 #include "config.h"
 #include "shader.h"
 #include "texture.h"
+#include "font.h"
 
 
 typedef struct
@@ -24,6 +25,7 @@ typedef struct
 
   Widget widgets[WIDGET_AMOUNT];
   Texture* loadedTextures;
+  FontManager fontManager; 
 } Application;
 
 Application application_createApp();

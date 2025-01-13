@@ -81,6 +81,27 @@ int application_initApp(Application* app_ptr, int width, int height)
 
   glViewport(0, 0, width, height);
 
+  memset(&app_ptr->fontManager, 0, sizeof(FontManager));
+  if (font_initFontManager(&app_ptr->fontManager) == APPLICATION_ERROR)
+  {
+    return APPLICATION_ERROR;
+  }
+
+  FT_Face* face;
+  if (font_loadFile(
+    &app_ptr->fontManager,
+    &face,
+    "../assets/IBMPlexSans-Regular.ttf"
+  ) == APPLICATION_ERROR)
+  {
+    return APPLICATION_ERROR;
+  }
+
+  
+  FT_Set_Pixel_Sizes(*face, 0, 48);  
+
+  FT_Load_Char(*face, 'A', FT_LOAD_RENDER);
+  printf("Width %d   Height %d", (*face)->glyph->bitmap.width, (*face)->glyph->bitmap.rows);
 
   unsigned int shader;
   if (shader_createTextured(&shader) == APPLICATION_ERROR)
@@ -168,6 +189,7 @@ void application_quitApp(Application* app_ptr)
     widget_delete(&app_ptr->widgets[i]);
   }
 
+  font_deleteFontManager(&app_ptr->fontManager);
   free(app_ptr->loadedTextures);
 
   app_ptr->isRunning = false;

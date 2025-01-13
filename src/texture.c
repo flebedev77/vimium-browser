@@ -3,11 +3,6 @@
 
 int texture_init(Texture* tex, const char* filePath)
 {
-  if (tex == NULL)
-  {
-    return APPLICATION_ERROR;
-  }
-
   tex->textureData = stbi_load(
     filePath,
     &tex->width,
@@ -20,12 +15,22 @@ int texture_init(Texture* tex, const char* filePath)
   {
     printf("Loaded image %s %dx%dpx\n", filePath, tex->width, tex->height);
   }
+  return texture_initFromMemory(tex, tex->textureData);
+}
+
+int texture_initFromMemory(Texture* tex, unsigned char* data)
+{
+  if (tex == NULL)
+  {
+    return APPLICATION_ERROR;
+  }
+
+  tex->textureData = data;
 
   if (!tex->textureData)
   {
     return APPLICATION_ERROR;
   }
-
 
   glGenTextures(1, &tex->textureHandle);
   glBindTexture(GL_TEXTURE_2D, tex->textureHandle);
@@ -38,6 +43,7 @@ int texture_init(Texture* tex, const char* filePath)
   glGenerateMipmap(GL_TEXTURE_2D);
 
   return APPLICATION_SUCCESS;
+
 }
 
 int texture_delete(Texture* tex)
