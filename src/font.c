@@ -71,6 +71,7 @@ int font_createTextWidget(
 {
   assert(fm);
   assert(face);
+  assert(parentApplication);
 
   size_t textLen = strlen(text);
 
@@ -85,9 +86,17 @@ int font_createTextWidget(
 
   Text textWidget;
   textWidget.length = textLen;
+  textWidget.size = size;
   textWidget.characters = (Character*)malloc(
     textLen * sizeof(Character)
   );
+
+  if (textWidget.characters == NULL) {
+    if (DEBUG) {
+      printf("Memory allocation for characters failed\n");
+    }
+    return APPLICATION_ERROR;
+  }
 
   unsigned int shader;
   if (shader_createColored(&shader, 0.1f, 0.1f, 1.f) == APPLICATION_ERROR)
@@ -99,6 +108,8 @@ int font_createTextWidget(
     return APPLICATION_ERROR;
   }
 
+  FT_Set_Pixel_Sizes(*face, 0, size);
+
   for (size_t i = 0; i < textLen; i++)
   {
     Character* character = &textWidget.characters[i];
@@ -106,7 +117,7 @@ int font_createTextWidget(
     (*character).widget.x = x + i * 20;
     (*character).widget.y = y;
     (*character).widget.w = 15;
-    (*character).widget.h = 25;
+    (*character).widget.h = size;
     (*character).widget.shaderProgram = shader;
     widget_init(&(*character).widget, parentApplication, windowWidth, windowHeight);
   }
@@ -121,13 +132,14 @@ int font_createTextWidget(
   return APPLICATION_SUCCESS;
 }
 
-int font_renderTextWidgets(
+void font_renderTextWidgets(
     FontManager* fm,
     GLFWwindow* window
 )
 {
     assert(fm);
     assert(window);
+
     for (size_t i = 0; i < fm->textAmount; i++)  
     {
       for (size_t j = 0; j < fm->texts[i].length; j++)

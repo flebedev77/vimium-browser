@@ -18,8 +18,8 @@ typedef struct {
 
 typedef struct {
   Character* characters; 
-  unsigned int length;
-  unsigned int size;
+  size_t length;
+  size_t size;
 } Text;
 
 typedef struct {
@@ -52,7 +52,7 @@ int font_createTextWidget(
     char text[]
 );
 
-int font_renderTextWidgets(
+void font_renderTextWidgets(
     FontManager* fm,
     GLFWwindow* window
 );
