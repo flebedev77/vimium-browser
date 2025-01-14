@@ -124,24 +124,24 @@ int application_initApp(Application* app_ptr, int width, int height)
     return APPLICATION_ERROR;
   }
 
-  app_ptr->loadedTextures = (Texture*)malloc(INITIAL_TEXTURE_AMOUNT * sizeof(Texture));
-
-  if (texture_init(&app_ptr->loadedTextures[0], "../assets/vim.png") == APPLICATION_ERROR)
-  {
-    return APPLICATION_ERROR;
-  }
-
-  Widget w;
-  w.x = 0;
-  w.y = 0;
-  w.w = 300.f;
-  w.h = 300.f;
-  w.shaderProgram = shader;
-  w.texture = &app_ptr->loadedTextures[0];
-  w.hoverCallback = onclick;
-  app_ptr->widgets[0] = w;
-
-  widget_init(&app_ptr->widgets[0], app_ptr, width, height);
+  /*app_ptr->loadedTextures = (Texture*)malloc(INITIAL_TEXTURE_AMOUNT * sizeof(Texture));*/
+  /**/
+  /*if (texture_init(&app_ptr->loadedTextures[0], "../assets/vim.png") == APPLICATION_ERROR)*/
+  /*{*/
+  /*  return APPLICATION_ERROR;*/
+  /*}*/
+  /**/
+  /*Widget w;*/
+  /*w.x = 0;*/
+  /*w.y = 0;*/
+  /*w.w = 300.f;*/
+  /*w.h = 300.f;*/
+  /*w.shaderProgram = shader;*/
+  /*w.texture = &app_ptr->loadedTextures[0];*/
+  /*w.hoverCallback = onclick;*/
+  /*app_ptr->widgets[0] = w;*/
+  /**/
+  /*widget_init(&app_ptr->widgets[0], app_ptr, width, height);*/
 
 
   return APPLICATION_SUCCESS;

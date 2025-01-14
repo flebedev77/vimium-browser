@@ -51,6 +51,14 @@ int font_loadFile(
     fm->faces,
     fm->faceAmount * sizeof(FT_Face)
   );
+  if (fm->faces == NULL)
+  {
+    if (DEBUG)
+    {
+      printf("Failed to reallocate faces\n");
+    }
+    return APPLICATION_ERROR;
+  }
   fm->faces[fm->faceAmount-1] = ftface;
   *face = &fm->faces[fm->faceAmount-1];
 
@@ -114,11 +122,13 @@ int font_createTextWidget(
   {
     Character* character = &textWidget.characters[i];
     (*character).textChar = text[i];
-    (*character).widget.x = x + i * 20;
-    (*character).widget.y = y;
-    (*character).widget.w = 15;
-    (*character).widget.h = size;
-    (*character).widget.shaderProgram = shader;
+    Widget w;
+    w.x = x + i * 20;
+    w.y = y;
+    w.w = 15;
+    w.h = size;
+    w.shaderProgram = shader;
+    (*character).widget = w;
     widget_init(&(*character).widget, parentApplication, windowWidth, windowHeight);
   }
 
@@ -142,9 +152,12 @@ void font_renderTextWidgets(
 
     for (size_t i = 0; i < fm->textAmount; i++)  
     {
-      for (size_t j = 0; j < fm->texts[i].length; j++)
+      if (fm->texts[i].length != 0)
       {
-        widget_render(&fm->texts[i].characters[j].widget, window);
+        for (size_t j = 0; j < fm->texts[i].length; j++)
+        {
+            widget_render(&fm->texts[i].characters[j].widget, window);
+        }
       }
     }
 }
