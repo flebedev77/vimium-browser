@@ -102,12 +102,12 @@ void widget_render(Widget* widget, GLFWwindow* window)
   {
     printf("Widget dosen't have associated shader program! Is the WIDGET_AMOUNT equal to the actual amount of widgets?\n");
   }
-  if (widget->texture != 0)
+  if (widget->texture != 0 && widget->texture->textureHandle != 0)
   {
     glBindTexture(GL_TEXTURE_2D, widget->texture->textureHandle);
   } else if (widget->hasTexture == true)
   {
-    printf("Widget dosent have any texture, event though its supposed to.");
+    /*printf("Widget dosent have any texture, event though its supposed to.");*/
   }
   glBindVertexArray(widget->meshVAO);
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);

@@ -80,6 +80,8 @@ int application_initApp(Application* app_ptr, int width, int height)
   printf("OpenGL %s\n", glGetString(GL_VERSION));
 
   glViewport(0, 0, width, height);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   memset(&app_ptr->fontManager, 0, sizeof(FontManager));
   if (font_initFontManager(&app_ptr->fontManager) == APPLICATION_ERROR)
@@ -112,7 +114,8 @@ int application_initApp(Application* app_ptr, int width, int height)
     48,
     100,
     100,
-    "Hello world!"
+    (Color3f){0.f, 0.f, 0.f},
+    "good?"
   ) == APPLICATION_ERROR)
   {
     return APPLICATION_ERROR;

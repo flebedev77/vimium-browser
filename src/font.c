@@ -74,6 +74,7 @@ int font_createTextWidget(
     unsigned int size,
     float x,
     float y,
+    Color3f color,
     char text[]
 )
 {
@@ -107,7 +108,7 @@ int font_createTextWidget(
   }
 
   unsigned int shader;
-  if (shader_createColored(&shader, 0.1f, 0.1f, 1.f) == APPLICATION_ERROR)
+  if (shader_createText(&shader, color.r, color.g, color.b) == APPLICATION_ERROR)
   {
     if (DEBUG)
     {
@@ -118,18 +119,54 @@ int font_createTextWidget(
 
   FT_Set_Pixel_Sizes(*face, 0, size);
 
+  glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
   for (size_t i = 0; i < textLen; i++)
   {
     Character* character = &textWidget.characters[i];
+
     (*character).textChar = text[i];
+
+    if (FT_Load_Char(*face, text[i], FT_LOAD_RENDER) && DEBUG)
+    {
+      printf("FreeType failed to load glyph %s", text[i]);
+    }
+
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glTexImage2D(
+        GL_TEXTURE_2D,
+        0,
+        GL_RED,
+        (*face)->glyph->bitmap.width,
+        (*face)->glyph->bitmap.rows,
+        0,
+        GL_RED,
+        GL_UNSIGNED_BYTE,
+        (*face)->glyph->bitmap.buffer
+    );
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    character->texture.textureHandle = texture;
+    character->advance = (*face)->glyph->advance.x;
+    character->bearingX = (*face)->glyph->bitmap_left;
+    character->bearingY = (*face)->glyph->bitmap_top;
     Widget w;
-    w.x = x + i * 20;
-    w.y = y;
-    w.w = 15;
-    w.h = size;
+    w.x = x + character->bearingX;
+    w.y = y - character->bearingY;
+    w.w = (*face)->glyph->bitmap.width;
+    w.h = (*face)->glyph->bitmap.rows;//size;
     w.shaderProgram = shader;
+    w.texture = &character->texture;
     (*character).widget = w;
+
     widget_init(&(*character).widget, parentApplication, windowWidth, windowHeight);
+
+    x += (character->advance >> 6);
   }
 
   fm->textAmount++;

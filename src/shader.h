@@ -9,6 +9,7 @@
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
 #include "config.h"
+#include "util.h"
 
 /* Returns status, whether it fails or succeeds
  * Takes in a pointer for the shader program
@@ -22,5 +23,11 @@ int shader_createColored(
 );
 
 int shader_createTextured(unsigned int* shaderProgram);
+int shader_createText(
+    unsigned int* shaderProgram,
+    float r,
+    float g,
+    float b
+);
 
 void shader_delete(unsigned int shaderProgram);

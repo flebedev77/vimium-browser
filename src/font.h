@@ -3,6 +3,7 @@
 #include "ui/widget.h"
 #include "texture.h"
 #include "shader.h"
+#include "util.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -14,6 +15,10 @@
 typedef struct {
   char textChar;
   Widget widget; 
+  int bearingX;
+  int bearingY;
+  unsigned int advance;
+  Texture texture;
 } Character;
 
 typedef struct {
@@ -49,6 +54,7 @@ int font_createTextWidget(
     unsigned int size,
     float x,
     float y,
+    Color3f color,
     char text[]
 );
 

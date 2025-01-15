@@ -117,6 +117,45 @@ int shader_createColored(
   );
 }
 
+int shader_createText(
+  unsigned int* shaderProgram,
+  float r,
+  float g,
+  float b
+)
+{
+  const char *vertexShaderSource = "#version 330 core\n"
+    "layout (location = 0) in vec3 aPos;\n"
+    "layout (location = 1) in vec2 aTexCoord;\n"
+    "out vec2 TexCoord;\n"
+    "void main()\n"
+    "{\n"
+    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+    "   TexCoord = aTexCoord;\n"
+    "}\0";
+
+
+  char formattedFragmentShader[512];
+
+  snprintf(formattedFragmentShader, sizeof(formattedFragmentShader),
+           "#version 330 core\n"
+           "out vec4 FragColor;\n"
+           "in vec2 TexCoord;\n"
+           "uniform sampler2D textureSampler;\n"
+           "void main()\n"
+           "{\n"
+           "    vec4 sampled = vec4(1.0f, 1.0f, 1.0f, texture(textureSampler, TexCoord).r);\n"
+           "    FragColor = vec4(%f, %f, %f, 1.0f) * sampled;\n"
+           "}\n", r, g, b);
+  const char *fragmentShaderSource = formattedFragmentShader;
+
+  return shader_createFromShader(
+    shaderProgram,
+    vertexShaderSource,
+    fragmentShaderSource
+  );
+}
+
 void shader_delete(unsigned int shaderProgram)
 {
   glDeleteShader(shaderProgram);
