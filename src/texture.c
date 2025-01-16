@@ -52,3 +52,29 @@ int texture_delete(Texture* tex)
   
   glDeleteTextures(1, &tex->textureHandle);
 }
+
+
+void texture_initManager(TextureManager* tm)
+{
+  assert(tm);
+
+  tm->textureAmount = 0;
+  tm->textures = (Texture*)malloc(tm->textureAmount * sizeof(Texture));
+}
+
+void texture_deleteManager(TextureManager* tm)
+{
+  assert(tm);
+  free(tm->textures);
+}
+
+Texture* texture_addTexture(TextureManager* tm, Texture t)
+{
+  assert(tm);
+  tm->textureAmount++;
+  tm->textures = (Texture*)realloc(tm->textures, tm->textureAmount * sizeof(Texture));
+
+  size_t index = tm->textureAmount-1;
+  tm->textures[index] = t;
+  return &tm->textures[index];
+}

@@ -125,3 +125,45 @@ void widget_delete(Widget* widget)
   glDeleteBuffers(1, &widget->meshVBO);
   glDeleteBuffers(1, &widget->meshEBO);
 }
+
+
+void widget_initManager(WidgetManager* wm)
+{
+  assert(wm);
+
+  wm->widgetAmount = 0;
+  wm->widgets = (Widget*)malloc(wm->widgetAmount * sizeof(Widget));
+}
+
+void widget_deleteManager(WidgetManager* wm)
+{
+  assert(wm);
+
+  free(wm->widgets);
+}
+
+Widget* widget_addWidget(WidgetManager* wm, Widget w)
+{
+  assert(wm);
+
+  wm->widgetAmount++;
+  wm->widgets = realloc(wm->widgets, wm->widgetAmount * sizeof(Widget));
+
+  size_t index = wm->widgetAmount-1;
+  wm->widgets[index] = w;
+  return &wm->widgets[index];
+}
+
+void widget_renderManager(
+  WidgetManager* wm,
+  GLFWwindow* window
+)
+{
+  assert(wm);
+  assert(window);
+
+  for (size_t i = 0; i < wm->widgetAmount; i++)
+  {
+    widget_render(&wm->widgets[i], window);
+  }
+}

@@ -24,8 +24,9 @@ typedef struct
   bool isDebug;
 
   Widget widgets[WIDGET_AMOUNT];
-  Texture* loadedTextures;
   FontManager fontManager; 
+  WidgetManager widgetManager;
+  TextureManager textureManager;
 } Application;
 
 Application application_createApp();

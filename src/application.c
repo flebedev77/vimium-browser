@@ -84,16 +84,22 @@ int application_initApp(Application* app_ptr, int width, int height)
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   memset(&app_ptr->fontManager, 0, sizeof(FontManager));
+  memset(&app_ptr->widgetManager, 0, sizeof(WidgetManager));
+  memset(&app_ptr->textureManager, 0, sizeof(TextureManager));
+
   if (font_initFontManager(&app_ptr->fontManager) == APPLICATION_ERROR)
   {
     return APPLICATION_ERROR;
   }
 
+  texture_initManager(&app_ptr->textureManager);
+  widget_initManager(&app_ptr->widgetManager);
+
   FT_Face* face;
   if (font_loadFile(
     &app_ptr->fontManager,
     &face,
-    "../assets/IBMPlexSans-Regular.ttf"
+    "../assets/PlaywriteVN-VariableFont_wght.ttf"
   ) == APPLICATION_ERROR)
   {
     return APPLICATION_ERROR;
@@ -111,15 +117,16 @@ int application_initApp(Application* app_ptr, int width, int height)
     app_ptr->windowWidth,
     app_ptr->windowHeight,
     face,
-    48,
+    30,
     100,
     100,
     (Color3f){0.f, 0.f, 0.f},
-    "good?"
+    "Hello world! Lorem Ipsum dolor hefsrl gfs"
   ) == APPLICATION_ERROR)
   {
     return APPLICATION_ERROR;
   }
+
 
   unsigned int shader;
   if (shader_createTextured(&shader) == APPLICATION_ERROR)
@@ -127,24 +134,26 @@ int application_initApp(Application* app_ptr, int width, int height)
     return APPLICATION_ERROR;
   }
 
-  /*app_ptr->loadedTextures = (Texture*)malloc(INITIAL_TEXTURE_AMOUNT * sizeof(Texture));*/
-  /**/
-  /*if (texture_init(&app_ptr->loadedTextures[0], "../assets/vim.png") == APPLICATION_ERROR)*/
-  /*{*/
-  /*  return APPLICATION_ERROR;*/
-  /*}*/
-  /**/
-  /*Widget w;*/
-  /*w.x = 0;*/
-  /*w.y = 0;*/
-  /*w.w = 300.f;*/
-  /*w.h = 300.f;*/
-  /*w.shaderProgram = shader;*/
-  /*w.texture = &app_ptr->loadedTextures[0];*/
-  /*w.hoverCallback = onclick;*/
-  /*app_ptr->widgets[0] = w;*/
-  /**/
-  /*widget_init(&app_ptr->widgets[0], app_ptr, width, height);*/
+  Texture tex;
+
+  if (texture_init(&tex, "../assets/vim.png") == APPLICATION_ERROR)
+  {
+    return APPLICATION_ERROR;
+  }
+
+  Texture* wt = texture_addTexture(&app_ptr->textureManager, tex);
+
+  Widget w;
+  w.x = 0;
+  w.y = 0;
+  w.w = 300.f;
+  w.h = 300.f;
+  w.shaderProgram = shader;
+  w.texture = wt;
+  w.hoverCallback = onclick;
+
+  widget_init(&w, app_ptr, width, height);
+  (void*)widget_addWidget(&app_ptr->widgetManager, w);
 
 
   return APPLICATION_SUCCESS;
@@ -194,6 +203,11 @@ void application_loopApp(Application* app_ptr)
     widget_render(&app_ptr->widgets[i], app.window);
   }
 
+
+  widget_renderManager(
+    &app_ptr->widgetManager,
+    app_ptr->window
+  );
   font_renderTextWidgets(
     &app_ptr->fontManager,
     app_ptr->window
@@ -213,7 +227,8 @@ void application_quitApp(Application* app_ptr)
   }
 
   font_deleteFontManager(&app_ptr->fontManager);
-  free(app_ptr->loadedTextures);
+  widget_deleteManager(&app_ptr->widgetManager);
+  texture_deleteManager(&app_ptr->textureManager);
 
   app_ptr->isRunning = false;
   glfwTerminate();

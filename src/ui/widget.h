@@ -34,6 +34,17 @@ typedef struct
   void* parentApplication;
 } Widget;
 
+typedef struct {
+  Widget* widgets;
+  size_t widgetAmount;
+} WidgetManager;
+
 void widget_init(Widget* widget, void* parentApplication, int windowWidth, int windowHeight);
 void widget_render(Widget* widget, GLFWwindow* window);
 void widget_delete(Widget* widget);
+
+void widget_initManager(WidgetManager* wm);
+Widget* widget_addWidget(WidgetManager* wm, Widget w);
+void widget_renderManager(WidgetManager* wm, GLFWwindow* window);
+
+void widget_deleteManager(WidgetManager* wm);

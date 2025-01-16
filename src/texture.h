@@ -11,6 +11,16 @@ typedef struct {
   unsigned char* textureData;
 } Texture;
 
+typedef struct {
+  Texture* textures;
+  size_t textureAmount;
+} TextureManager;
+
 int texture_init(Texture* tex, const char* filePath);
 int texture_initFromMemory(Texture* tex, unsigned char* data);
 int texture_delete(Texture* tex);
+
+void texture_initManager(TextureManager* tm);
+void texture_deleteManager(TextureManager* tm);
+Texture* texture_addTexture(TextureManager* tm, Texture t);
+
